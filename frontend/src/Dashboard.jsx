@@ -105,7 +105,7 @@ function ViolationBars({ tv }) {
 
 function DetailPanel({ j }) {
   const topVtype = Object.keys(j.tv)[0];
-  const commercial = (j.vb["MAXI-CAB"] || 0) + (j.vb["LGV"] || 0) + (j.vb["HGV"] || 0);
+  const commercial = (j.vb["MAXI-CAB"] || 0) + (j.vb["LGV"] || 0) + (j.vb["HGV"] || 0) + (j.vb["HTV"] || 0);
   const commercialFlag = commercial > 100;
   const towing = topVtype === "PARKING IN A MAIN ROAD" || topVtype === "DOUBLE PARKING";
   const unitType = commercialFlag ? "Commercial vehicle unit + challan team" : "Challan unit (2 officers)";
