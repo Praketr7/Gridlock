@@ -150,8 +150,40 @@ def main():
     )
     sample_df = sample_df.copy()
     sample_df["cluster"] = db.labels_
-    df = df.merge(sample_df[["id", "cluster"]], on="id", how="left")
-    df["cluster"] = df["cluster"].fillna(-1).astype(int)
+
+    # Compute centroids of the sampled clusters
+    centroids = []
+    for cid in sorted(sample_df["cluster"].unique()):
+        if cid == -1:
+            continue
+        cgrp = sample_df[sample_df["cluster"] == cid]
+        centroids.append({
+            "cluster": cid,
+            "lat": cgrp["latitude"].mean(),
+            "lng": cgrp["longitude"].mean()
+        })
+
+    if centroids:
+        from sklearn.neighbors import BallTree
+        centroid_coords = np.array([[c["lat"], c["lng"]] for c in centroids])
+        centroid_rad = np.radians(centroid_coords)
+        df_rad = np.radians(df[["latitude", "longitude"]].values)
+        
+        tree = BallTree(centroid_rad, metric="haversine")
+        dists, indices = tree.query(df_rad, k=1)
+        
+        # Threshold of 500m in radians
+        max_dist_rad = 0.5 / 6371.0
+        
+        assigned_clusters = []
+        for dist, idx in zip(dists, indices):
+            if dist[0] <= max_dist_rad:
+                assigned_clusters.append(int(centroids[idx[0]]["cluster"]))
+            else:
+                assigned_clusters.append(-1)
+        df["cluster"] = assigned_clusters
+    else:
+        df["cluster"] = -1
 
     clusters = []
     for cid in sorted(df["cluster"].unique()):
