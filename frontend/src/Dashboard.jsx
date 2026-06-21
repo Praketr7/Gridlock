@@ -359,7 +359,7 @@ export default function Dashboard() {
       <div style={{ paddingBottom: 16, borderBottom: "2px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--t1)", letterSpacing: "0.01em", margin: 0 }}>
-            Gridlock Enforcement Dashboard
+            Mobilis Enforcement Dashboard
           </h1>
           <p style={{ fontSize: 13, color: "var(--t2)", marginTop: 4, marginBottom: 0 }}>
             Bengaluru Traffic Police · Parking Enforcement Decision Support
