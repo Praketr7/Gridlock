@@ -241,7 +241,7 @@ export default function HotspotMap({ junctions, hotspots, onSelectJunction }) {
       <div style={{
         display: "flex", gap: 8, padding: "10px 14px", 
         background: "var(--bg1)", border: "1px solid var(--border)", 
-        borderRadius: 4, alignItems: "center"
+        borderRadius: 4, alignItems: "center", flexWrap: "wrap"
       }}>
         <span style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Map Overlays</span>
         {[

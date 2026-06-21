@@ -161,7 +161,7 @@ function DetailPanel({ j }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+      <div className="detail-panel-grid">
         <div>
           <div style={{ fontSize: 11, fontWeight: 600, color: "var(--t2)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 12 }}>Violation Breakdown</div>
           <ViolationBars tv={j.tv} />
@@ -334,7 +334,7 @@ export default function Dashboard() {
     : "—";
 
   return (
-    <div style={{
+    <div className="dashboard-container" style={{
       "--bg1": "#fbfaf6",
       "--bg2": "#f4f1e8",
       "--t1": "#1b1b1b",
@@ -345,7 +345,6 @@ export default function Dashboard() {
       "--accent-amber": "#C79200",
       "--accent-red": "#B42318",
       fontFamily: "'Segoe UI', Arial, sans-serif",
-      padding: "24px",
       maxWidth: 1080,
       margin: "0 auto",
       background: "#f3f0e8",
@@ -355,8 +354,110 @@ export default function Dashboard() {
       flexDirection: "column",
       gap: "24px"
     }}>
+      <style>{`
+        .dashboard-container {
+          padding: 24px;
+        }
+        .dashboard-header {
+          padding-bottom: 16px;
+          border-bottom: 2px solid var(--border);
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+        .metrics-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+        }
+        .detail-panel-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 24px;
+        }
+        .leaderboard-row {
+          background: var(--bg1);
+          border-radius: 4px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          cursor: pointer;
+          box-shadow: none;
+          transition: all 0.15s ease;
+          transform: none;
+        }
+        .chat-window {
+          width: 360px;
+          height: 480px;
+          background: #fff;
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        @media (max-width: 900px) {
+          .metrics-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+        @media (max-width: 768px) {
+          .dashboard-container {
+            padding: 12px;
+          }
+          .detail-panel-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+        }
+        @media (max-width: 600px) {
+          .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 12px;
+          }
+          .leaderboard-row {
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 10px 12px;
+          }
+          .leaderboard-row-index {
+            width: auto !important;
+            text-align: left !important;
+          }
+          .leaderboard-row-info {
+            flex: 1 1 100% !important;
+            order: -1;
+          }
+          .leaderboard-row-bar {
+            display: none !important;
+          }
+          .leaderboard-row-score {
+            width: auto !important;
+            text-align: left !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .metrics-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        @media (max-width: 400px) {
+          .chat-widget-container {
+            right: 12px !important;
+            bottom: 12px !important;
+          }
+          .chat-window {
+            width: calc(100vw - 24px) !important;
+            height: 400px !important;
+          }
+        }
+      `}</style>
+
       {/* Header */}
-      <div style={{ paddingBottom: 16, borderBottom: "2px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <div className="dashboard-header">
         <div>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: "var(--t1)", letterSpacing: "0.01em", margin: 0 }}>
             Mobilis Enforcement Dashboard
@@ -371,7 +472,7 @@ export default function Dashboard() {
       </div>
 
       {/* Metrics — driven by /summary */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+      <div className="metrics-grid">
         <MetricCard label="Total Violations" value={fmt(summary?.total_violations ?? 0)} sub="from processed dataset" />
         <MetricCard label="Junctions Monitored" value={summary?.junctions_monitored ?? "—"} sub="Named BTP intersections" />
         <MetricCard label="High Risk Junctions" value={summary?.high_risk_junctions ?? "—"} sub="CIS score ≥ 5.0" color="var(--accent-amber)" />
@@ -430,15 +531,9 @@ export default function Dashboard() {
               {junctions.map((j, i) => (
                 <Fragment key={j.n}>
                   <div onClick={() => setSelectedIdx(prev => prev === i ? null : i)}
+                    className="leaderboard-row"
                     style={{
-                      background: "var(--bg1)",
                       border: `1px solid ${i === selectedIdx ? "var(--accent)" : "var(--border)"}`,
-                      borderRadius: 4, padding: "12px 16px",
-                      display: "flex", alignItems: "center", gap: 16,
-                      cursor: "pointer",
-                      boxShadow: "none",
-                      transition: "all 0.15s ease",
-                      transform: "none",
                     }}
                     onMouseEnter={(e) => {
                       if (i !== selectedIdx) e.currentTarget.style.borderColor = "var(--accent)";
@@ -447,17 +542,17 @@ export default function Dashboard() {
                       if (i !== selectedIdx) e.currentTarget.style.borderColor = "var(--border)";
                     }}
                   >
-                    <span style={{ fontSize: 11, color: "var(--t3)", width: 20, flexShrink: 0, textAlign: "right", fontWeight: 600 }}>{i + 1}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <span className="leaderboard-row-index" style={{ fontSize: 11, color: "var(--t3)", width: 20, flexShrink: 0, textAlign: "right", fontWeight: 600 }}>{i + 1}</span>
+                    <div className="leaderboard-row-info" style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t1)" }}>{j.n}</div>
                       <div style={{ fontSize: 11, color: "var(--t2)", marginTop: 2 }}>
                         {j.ps} · {fmt(j.vc)} violations · peak {j.ph}:00
                       </div>
                     </div>
-                    <div style={{ width: 80, height: 6, background: "var(--bg2)", borderRadius: 3, overflow: "hidden", border: "1px solid var(--border)", flexShrink: 0 }}>
+                    <div className="leaderboard-row-bar" style={{ width: 80, height: 6, background: "var(--bg2)", borderRadius: 3, overflow: "hidden", border: "1px solid var(--border)", flexShrink: 0 }}>
                       <div style={{ height: "100%", borderRadius: 3, width: `${(j.cis / 10) * 100}%`, background: cisColor(j.cis) }} />
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, width: 28, textAlign: "right", flexShrink: 0, color: cisColor(j.cis) }}>{j.cis}</span>
+                    <span className="leaderboard-row-score" style={{ fontSize: 12, fontWeight: 600, width: 28, textAlign: "right", flexShrink: 0, color: cisColor(j.cis) }}>{j.cis}</span>
                     <Badge rl={j.rl} />
                   </div>
                   {i === selectedIdx && (
@@ -546,7 +641,7 @@ function ChatWidget() {
   ];
 
   return (
-    <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, fontFamily: "Inter, sans-serif" }}>
+    <div className="chat-widget-container" style={{ position: "fixed", bottom: 24, right: 24, zIndex: 9999, fontFamily: "Inter, sans-serif" }}>
       {!isOpen ? (
         <button onClick={() => setIsOpen(true)} style={{
           background: "#3B7D3A",
@@ -569,17 +664,7 @@ function ChatWidget() {
           <span>💬</span> Assistant
         </button>
       ) : (
-        <div style={{
-          width: 360,
-          height: 480,
-          background: "#fff",
-          border: "1px solid var(--border)",
-          borderRadius: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-        }}>
+        <div className="chat-window">
           {/* Header */}
           <div style={{ background: "#3B7D3A", color: "#fff", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
