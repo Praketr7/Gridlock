@@ -226,7 +226,7 @@ npm run dev
 ### Environment Variables
 ```
 GROQ_API_KEY=
-API_BASE_URL=http://localhost:8000
+VITE_API_URL=http://localhost:8000
 ```
 
 ---
